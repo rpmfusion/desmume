@@ -1,0 +1,14 @@
+--- desmume-0.7.0/src/gtk-glade/main.c.orig	2007-04-21 20:45:07.000000000 +0100
++++ desmume-0.7.0/src/gtk-glade/main.c	2007-06-01 13:48:22.000000000 +0100
+@@ -77,11 +77,6 @@
+ {
+ 	char *path;
+ 
+-	/* looking in uninstalled (aka building) dir first */
+-	path = g_build_filename (GLADEUI_UNINSTALLED_DIR, filename, NULL);
+-	if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) return path;
+-	g_free (path);
+-	
+ 	/* looking in installed dir */
+ 	path = g_build_filename (DATADIR, filename, NULL);
+ 	if (g_file_test (path, G_FILE_TEST_IS_REGULAR)) return path;
