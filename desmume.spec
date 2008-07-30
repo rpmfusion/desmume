@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.8
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
@@ -181,6 +181,9 @@ fi
 
 
 %changelog
+* Wed Jul 30 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 0.8-2
+- rebuild for buildsys cflags issue
+
 * Wed Apr 23 2008 Andrea Musuruane <musuruan@gmail.com> 0.8-1
 - Updated to upstream version 0.8
 
