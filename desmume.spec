@@ -1,6 +1,6 @@
 Name: desmume
-Version: 0.8
-Release: 2%{?dist}
+Version: 0.9
+Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
@@ -8,10 +8,8 @@ License: GPLv2+
 URL: http://desmume.org/
 Source0: http://dl.sf.net/%{name}/%{name}-%{version}.tar.gz
 Source1: desmume-man-pages-0.7.3.tar.gz
-Patch0: desmume-0.7.0-dontlookinbuilddir.patch
-Patch1: desmume-0.7.0-nobuggytoolsmenu.patch
-# The following files were not found in the official 0.7.3 release
-#Patch2: desmume-0.7.3-debian.patch
+Patch0: %{name}-0.9-dontlookinbuilddir.patch
+Patch1: %{name}-0.9-nobuggytoolsmenu.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: gtkglext-devel
@@ -54,19 +52,29 @@ This is the CLI version.
 %ifarch x86_64
 %patch1 -p1
 %endif
-#%patch2 -p1
+
+# Fix end-of-line encoding
+sed -i 's/\r//' ChangeLog AUTHORS
+
+# Fix file encoding
+for txtfile in ChangeLog AUTHORS
+do
+    iconv --from=ISO-8859-1 --to=UTF-8 $txtfile > tmp
+    touch -r $txtfile tmp
+    mv tmp $txtfile
+done
 
 # Fix premissions
-chmod 644 src/*.{c,h}
-chmod 644 src/gtk-glade/*.{c,h}
-chmod 644 src/gtk-glade/dTools/*.{c,h}
+chmod 644 src/*.{cpp,h}
+chmod 644 src/gtk-glade/*.{cpp,h}
+chmod 644 src/gtk-glade/dTools/*.{cpp,h}
 
 # Fix glade path
 sed -i 's|gladedir = $(datadir)/desmume/glade|gladedir = $(datadir)/desmume-glade/|g' src/gtk-glade/Makefile.{am,in}
 
 # We need a different icon for desmume-glade
 cp -a src/gtk/DeSmuME.xpm src/gtk-glade/DeSmuME-glade.xpm
-sed -i 's|Icon=DeSmuME.xpm|Icon=DeSmuME-glade.xpm|g' src/gtk-glade/desmume-glade.desktop.in
+sed -i 's|Icon=DeSmuME.xpm|Icon=DeSmuME-glade.xpm|g' src/gtk-glade/desmume-glade.desktop
 
 # Fix gettext package name
 sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' configure{,.ac}
@@ -103,8 +111,6 @@ desktop-file-install \
   --remove-key Version \
   --remove-category GNOME \
   --remove-category GTK \
-  --remove-category Application \
-  --add-category Emulator \
   --dir %{buildroot}%{_datadir}/applications \
   %{buildroot}%{_datadir}/applications/%{name}.desktop
 
@@ -114,8 +120,6 @@ desktop-file-install \
   --remove-key Version \
   --remove-category GNOME \
   --remove-category GTK \
-  --remove-category Application \
-  --add-category Emulator \
   --dir %{buildroot}%{_datadir}/applications \
   %{buildroot}%{_datadir}/applications/%{name}-glade.desktop
 
@@ -181,6 +185,9 @@ fi
 
 
 %changelog
+* Sun Jan 04 2009 Andrea Musuruane <musuruan@gmail.com> 0.9-1
+- Updated to upstream version 0.9
+
 * Wed Jul 30 2008 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info - 0.8-2
 - rebuild for buildsys cflags issue
 
