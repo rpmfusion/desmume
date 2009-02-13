@@ -1,5 +1,5 @@
 Name: desmume
-Version: 0.9
+Version: 0.9.1
 Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
@@ -9,7 +9,7 @@ URL: http://desmume.org/
 Source0: http://dl.sf.net/%{name}/%{name}-%{version}.tar.gz
 Source1: desmume-man-pages-0.7.3.tar.gz
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
-Patch1: %{name}-0.9-nobuggytoolsmenu.patch
+Patch1: %{name}-0.9.1-nobuggytoolsmenu.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: gtkglext-devel
@@ -185,6 +185,9 @@ fi
 
 
 %changelog
+* Fri Feb 13 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.1-1
+- Updated to upstream version 0.9.1
+
 * Sun Jan 04 2009 Andrea Musuruane <musuruan@gmail.com> 0.9-1
 - Updated to upstream version 0.9
 

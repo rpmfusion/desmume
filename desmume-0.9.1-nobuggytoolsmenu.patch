@@ -1,0 +1,11 @@
+diff -dur desmume-0.9.1.orig/src/gtk/main.cpp desmume-0.9.1/src/gtk/main.cpp
+--- desmume-0.9.1.orig/src/gtk/main.cpp	2009-02-08 22:59:15.000000000 +0100
++++ desmume-0.9.1/src/gtk/main.cpp	2009-02-13 09:47:32.000000000 +0100
+@@ -1812,7 +1812,6 @@
+ 	desmume_gtk_menu_file(pMenuBar);
+ 	desmume_gtk_menu_emulation(pMenuBar, my_config->opengl);
+ 	desmume_gtk_menu_config(pMenuBar);
+-	desmume_gtk_menu_tools(pMenuBar);
+ 	desmume_gtk_menu_help(pMenuBar);
+ 
+ 	gtk_box_pack_start(GTK_BOX(pVBox), pMenuBar, FALSE, FALSE, 0);
