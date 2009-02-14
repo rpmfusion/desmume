@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
@@ -10,6 +10,9 @@ Source0: http://dl.sf.net/%{name}/%{name}-%{version}.tar.gz
 Source1: desmume-man-pages-0.7.3.tar.gz
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
 Patch1: %{name}-0.9.1-nobuggytoolsmenu.patch
+# Compile with gcc 4.4
+# http://sourceforge.net/tracker/index.php?func=detail&aid=2599049&group_id=164579&atid=832291 
+Patch2: %{name}-0.9.1-gcc44.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: gtkglext-devel
@@ -52,6 +55,7 @@ This is the CLI version.
 %ifarch x86_64
 %patch1 -p1
 %endif
+%patch2 -p1
 
 # Fix end-of-line encoding
 sed -i 's/\r//' ChangeLog AUTHORS
@@ -185,6 +189,9 @@ fi
 
 
 %changelog
+* Sat Feb 14 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.1-2
+- Made a patch to compile with gcc 4.4 (SF #2599049)
+
 * Fri Feb 13 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.1-1
 - Updated to upstream version 0.9.1
 
