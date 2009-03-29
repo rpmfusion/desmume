@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
@@ -189,6 +189,9 @@ fi
 
 
 %changelog
+* Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 0.9.1-3
+- rebuild for new F11 features
+
 * Sat Feb 14 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.1-2
 - Made a patch to compile with gcc 4.4 (SF #2599049)
 
