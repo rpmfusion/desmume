@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
@@ -9,7 +9,9 @@ URL: http://desmume.org/
 Source0: http://dl.sf.net/%{name}/%{name}-%{version}.tar.gz
 Source1: desmume-man-pages-0.7.3.tar.gz
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
-Patch1: %{name}-0.9.2-nobuggytoolsmenu.patch
+# Fix IO Regs menu
+# http://sourceforge.net/tracker/?func=detail&atid=832291&aid=2781065&group_id=164579
+Patch1: %{name}-0.9.2-fix-ioregs-crash.patch
 # Compile on 64 bit systems
 # http://sourceforge.net/tracker/?func=detail&aid=2755952&group_id=164579&atid=832291
 Patch2: %{name}-0.9.2-64bit.patch
@@ -52,9 +54,7 @@ This is the CLI version.
 %setup -q -T -D -a 1
 
 %patch0 -p1
-%ifarch x86_64
-%patch1 -p1
-%endif
+%patch1 -p0
 %patch2 -p0
 
 # Fix end-of-line encoding
@@ -189,6 +189,9 @@ fi
 
 
 %changelog
+* Thu Apr 30 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.2-2
+- Added a patch from upstream to fix IO Regs menu crash (SF #2781065)
+
 * Sun Apr 19 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.2-1
 - Updated to upstream version 0.9.2
 - Removed no longer needed patch to compile with gcc 4.4
