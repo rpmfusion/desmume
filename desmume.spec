@@ -1,20 +1,13 @@
 Name: desmume
-Version: 0.9.2
-Release: 2%{?dist}
+Version: 0.9.4
+Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
 License: GPLv2+
 URL: http://desmume.org/
 Source0: http://dl.sf.net/%{name}/%{name}-%{version}.tar.gz
-Source1: desmume-man-pages-0.7.3.tar.gz
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
-# Fix IO Regs menu
-# http://sourceforge.net/tracker/?func=detail&atid=832291&aid=2781065&group_id=164579
-Patch1: %{name}-0.9.2-fix-ioregs-crash.patch
-# Compile on 64 bit systems
-# http://sourceforge.net/tracker/?func=detail&aid=2755952&group_id=164579&atid=832291
-Patch2: %{name}-0.9.2-64bit.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: gtkglext-devel
@@ -51,14 +44,10 @@ This is the CLI version.
 
 %prep
 %setup -q
-%setup -q -T -D -a 1
-
 %patch0 -p1
-%patch1 -p0
-%patch2 -p0
 
 # Fix end-of-line encoding
-sed -i 's/\r//' ChangeLog AUTHORS
+sed -i 's/\r//' AUTHORS
 
 # Fix file encoding
 for txtfile in ChangeLog AUTHORS
@@ -77,7 +66,6 @@ chmod 644 src/gtk-glade/dTools/*.{cpp,h}
 sed -i 's|gladedir = $(datadir)/desmume/glade|gladedir = $(datadir)/desmume-glade/|g' src/gtk-glade/Makefile.{am,in}
 
 # We need a different icon for desmume-glade
-cp -a src/gtk/DeSmuME.xpm src/gtk-glade/DeSmuME-glade.xpm
 sed -i 's|Icon=DeSmuME.xpm|Icon=DeSmuME-glade.xpm|g' src/gtk-glade/desmume-glade.desktop
 
 # Fix gettext package name
@@ -93,19 +81,13 @@ make %{?_smp_mflags}
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 
-# Install man pages
-mkdir -p %{buildroot}%{_mandir}/man1/
-install -p -m0644 man/%{name}.1 %{buildroot}%{_mandir}/man1/
-install -p -m0644 man/%{name}-glade.1 %{buildroot}%{_mandir}/man1/
-install -p -m0644 man/%{name}-cli.1 %{buildroot}%{_mandir}/man1/
-
 # Remove installed icon
 rm %{buildroot}%{_datadir}/pixmaps/DeSmuME.xpm
 
 # Install icons
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
 install -m 644 src/gtk/DeSmuME.xpm %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/
-install -m 644 src/gtk-glade/DeSmuME-glade.xpm %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/
+install -m 644 src/gtk/DeSmuME.xpm %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/DeSmuME-glade.xpm
 
 # Rename desktop files and fix categories
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -189,6 +171,12 @@ fi
 
 
 %changelog
+* Fri Jul 24 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.4-1
+- Updated to upstream version 0.9.4
+- Removed no longer needed patches
+- Removed no longer needed Debian man pages
+- Cosmetic changes
+
 * Thu Apr 30 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.2-2
 - Added a patch from upstream to fix IO Regs menu crash (SF #2781065)
 
