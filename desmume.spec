@@ -46,6 +46,9 @@ This is the CLI version.
 %setup -q
 %patch0 -p1
 
+# Fix to compile under gcc 4.4
+sed -i "s/TexCache_TexFormat format/TexCache_TexFormat/" src/texcache.h 
+
 # Fix end-of-line encoding
 sed -i 's/\r//' AUTHORS
 
@@ -173,6 +176,7 @@ fi
 %changelog
 * Fri Jul 24 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.4-1
 - Updated to upstream version 0.9.4
+- Added a fix to compile under gcc 4.4 (SF #2819176)
 - Removed no longer needed patches
 - Removed no longer needed Debian man pages
 - Cosmetic changes
