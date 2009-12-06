@@ -1,5 +1,5 @@
 Name: desmume
-Version: 0.9.4
+Version: 0.9.5
 Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
@@ -15,6 +15,7 @@ BuildRequires: libglade2-devel
 BuildRequires: zziplib-devel 
 BuildRequires: gettext
 BuildRequires: intltool
+BuildRequires: agg-devel
 BuildRequires: desktop-file-utils
 Requires: hicolor-icon-theme
 
@@ -45,9 +46,6 @@ This is the CLI version.
 %prep
 %setup -q
 %patch0 -p1
-
-# Fix to compile under gcc 4.4
-sed -i "s/TexCache_TexFormat format/TexCache_TexFormat/" src/texcache.h 
 
 # Fix end-of-line encoding
 sed -i 's/\r//' AUTHORS
@@ -120,31 +118,33 @@ rm -rf %{buildroot}
 
 
 %post
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
-fi
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %post glade
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
-fi
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %postun
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+if [ $1 -eq 0 ] ; then
+    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
 
 
 %postun glade
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+if [ $1 -eq 0 ] ; then
+    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
+
+
+%posttrans
+gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+
+
+%posttrans glade
+gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
@@ -174,6 +174,10 @@ fi
 
 
 %changelog
+* Sun Dec 06 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.5-1
+- Updated to upstream version 0.9.5
+- Updated icon cache scriptlets
+
 * Fri Jul 24 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.4-1
 - Updated to upstream version 0.9.4
 - Added a fix to compile under gcc 4.4 (SF #2819176)
