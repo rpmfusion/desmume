@@ -1,15 +1,13 @@
 Name: desmume
-Version: 0.9.5
-Release: 2%{?dist}
+Version: 0.9.6
+Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
 License: GPLv2+
 URL: http://desmume.org/
-Source0: http://dl.sf.net/%{name}/%{name}-%{version}.tar.gz
+Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}-1.tar.gz
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
-# Upstream
-Patch1: %{name}-0.9.5-bigendian.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: gtkglext-devel
@@ -48,7 +46,6 @@ This is the CLI version.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 # Fix end-of-line encoding
 sed -i 's/\r//' AUTHORS
@@ -177,6 +174,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Jun 06 2010 Andrea Musuruane <musuruan@gmail.com> 0.9.6-1
+- Updated to upstream version 0.9.6-1
+- Fixed Source0 URL
+
 * Sun Dec 06 2009 Andrea Musuruane <musuruan@gmail.com> 0.9.5-2
 - Added a patch from upstream to compile on big endian systems (SF #2909694)
 
