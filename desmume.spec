@@ -1,12 +1,12 @@
 Name: desmume
-Version: 0.9.6
+Version: 0.9.7
 Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
 License: GPLv2+
 URL: http://desmume.org/
-Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}-1.tar.gz
+Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -174,6 +174,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Feb 06 2011 Andrea Musuruane <musuruan@gmail.com> 0.9.7-1
+- Updated to upstream version 0.9.7
+
 * Sun Jun 06 2010 Andrea Musuruane <musuruan@gmail.com> 0.9.6-1
 - Updated to upstream version 0.9.6-1
 - Fixed Source0 URL
