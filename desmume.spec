@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.7
-Release: 1%{?dist}
+Release: 3%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
@@ -67,7 +67,7 @@ chmod 644 src/gtk-glade/dTools/*.{cpp,h}
 sed -i 's|gladedir = $(datadir)/desmume/glade|gladedir = $(datadir)/desmume-glade/|g' src/gtk-glade/Makefile.{am,in}
 
 # We need a different icon for desmume-glade
-sed -i 's|Icon=DeSmuME.xpm|Icon=DeSmuME-glade.xpm|g' src/gtk-glade/desmume-glade.desktop
+sed -i 's|Icon=DeSmuME|Icon=DeSmuME-glade|g' src/gtk-glade/desmume-glade.desktop
 
 # Fix gettext package name
 sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' configure{,.ac}
@@ -174,6 +174,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sat Mar 17 2012 Andrea Musuruane <musuruan@gmail.com> 0.9.7-3
+- Fixed an error in desmume-glade.desktop (BZ #2229)
+
+* Fri Mar 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 0.9.7-2
+- Rebuilt for c++ ABI breakage
+
 * Sun Feb 06 2011 Andrea Musuruane <musuruan@gmail.com> 0.9.7-1
 - Updated to upstream version 0.9.7
 
