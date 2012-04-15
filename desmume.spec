@@ -1,17 +1,22 @@
 Name: desmume
 Version: 0.9.7
-Release: 3%{?dist}
+Release: 5%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
 License: GPLv2+
 URL: http://desmume.org/
 Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+# Do not look into builddir
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
+# Fixes FTBFS for gcc 4.7
+Patch1: %{name}-0.9.7-gcc47.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: gtkglext-devel
 BuildRequires: libglade2-devel
+BuildRequires: openal-soft-devel
+BuildRequires: lua-devel
 BuildRequires: zziplib-devel 
 BuildRequires: gettext
 BuildRequires: intltool
@@ -46,6 +51,7 @@ This is the CLI version.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 # Fix end-of-line encoding
 sed -i 's/\r//' AUTHORS
@@ -74,7 +80,7 @@ sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' configure{,.a
 
 
 %build
-%configure
+%configure --enable-openal
 make %{?_smp_mflags}
 
 
@@ -174,6 +180,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Apr 15 2012 Andrea Musuruane <musuruan@gmail.com> 0.9.7-5
+- Fixed microphone support (BZ #2231)
+- Enabled LUA engine
+
+* Sat Mar 17 2012 Andrea Musuruane <musuruan@gmail.com> 0.9.7-4
+- Fixed FTBFS for F17+
+
 * Sat Mar 17 2012 Andrea Musuruane <musuruan@gmail.com> 0.9.7-3
 - Fixed an error in desmume-glade.desktop (BZ #2229)
 
