@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.7
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
@@ -15,6 +15,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: gtkglext-devel
 BuildRequires: libglade2-devel
+BuildRequires: openal-soft-devel
+BuildRequires: lua-devel
 BuildRequires: zziplib-devel 
 BuildRequires: gettext
 BuildRequires: intltool
@@ -78,7 +80,7 @@ sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' configure{,.a
 
 
 %build
-%configure
+%configure --enable-openal
 make %{?_smp_mflags}
 
 
@@ -178,6 +180,10 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Apr 15 2012 Andrea Musuruane <musuruan@gmail.com> 0.9.7-5
+- Fixed microphone support (BZ #2231)
+- Enabled LUA engine
+
 * Sat Mar 17 2012 Andrea Musuruane <musuruan@gmail.com> 0.9.7-4
 - Fixed FTBFS for F17+
 
