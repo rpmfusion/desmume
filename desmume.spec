@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.8
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Nintendo DS emulator
 
 Group: Applications/Emulators
@@ -177,6 +177,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Mar 03 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.9.8-2
+- Mass rebuilt for Fedora 19 Features
+
 * Thu Apr 26 2012 Andrea Musuruane <musuruan@gmail.com> 0.9.8-1
 - Updated to upstream version 0.9.8
 
