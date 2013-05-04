@@ -1,15 +1,17 @@
+%if (0%{?fedora} && 0%{?fedora}) < 19
+%global with_desktop_vendor_tag 1
+%endif
+
 Name: desmume
-Version: 0.9.8
-Release: 2%{?dist}
+Version: 0.9.9
+Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
-Group: Applications/Emulators
 License: GPLv2+
 URL: http://desmume.org/
 Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 # Do not look into builddir
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: gtkglext-devel
 BuildRequires: libglade2-devel
@@ -77,7 +79,9 @@ sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' configure{,.a
 
 
 %build
-%configure --enable-openal
+%configure \
+  --enable-openal \
+  --enable-glade
 make %{?_smp_mflags}
 
 
@@ -97,7 +101,9 @@ install -m 644 src/gtk/DeSmuME.xpm %{buildroot}%{_datadir}/icons/hicolor/32x32/a
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --delete-original \
+%if %{with_desktop_vendor_tag}
   --vendor dribble \
+%endif
   --remove-key Version \
   --remove-category GNOME \
   --remove-category GTK \
@@ -106,7 +112,9 @@ desktop-file-install \
 
 desktop-file-install \
   --delete-original \
+%if %{with_desktop_vendor_tag}  
   --vendor dribble \
+%endif
   --remove-key Version \
   --remove-category GNOME \
   --remove-category GTK \
@@ -114,10 +122,6 @@ desktop-file-install \
   %{buildroot}%{_datadir}/applications/%{name}-glade.desktop
 
 %find_lang %{name}-glade
-
-
-%clean
-rm -rf %{buildroot}
 
 
 %post
@@ -151,32 +155,42 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%defattr(-,root,root,-)
 %{_bindir}/%{name}
 %{_datadir}/icons/hicolor/32x32/apps/DeSmuME.xpm
+%if %{with_desktop_vendor_tag} 
 %{_datadir}/applications/dribble-%{name}.desktop
+%else
+%{_datadir}/applications/%{name}.desktop
+%endif
 %{_mandir}/man1/%{name}.1*
 %doc AUTHORS ChangeLog COPYING README README.LIN
 
 
 %files glade -f %{name}-glade.lang
-%defattr(-,root,root,-)
 %{_bindir}/%{name}-glade
 %{_datadir}/%{name}-glade
 %{_datadir}/icons/hicolor/32x32/apps/DeSmuME-glade.xpm
+%if %{with_desktop_vendor_tag}
 %{_datadir}/applications/dribble-%{name}-glade.desktop
+%else
+%{_datadir}/applications/%{name}-glade.desktop
+%endif
 %{_mandir}/man1/%{name}-glade.1*
 %doc AUTHORS ChangeLog COPYING README README.LIN
 
 
 %files cli
-%defattr(-,root,root,-)
 %{_bindir}/%{name}-cli
 %{_mandir}/man1/%{name}-cli.1*
 %doc AUTHORS ChangeLog COPYING README README.LIN
 
 
 %changelog
+* Wed May 01 2013 Andrea Musuruane <musuruan@gmail.com> - 0.9.9-1
+- Updated to upstream version 0.9.9
+- Dropped obsolete Group, Buildroot, %%clean and %%defattr
+- Dropped desktop vendor tag for F19+
+
 * Sun Mar 03 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.9.8-2
 - Mass rebuilt for Fedora 19 Features
 
