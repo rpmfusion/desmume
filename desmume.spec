@@ -3,24 +3,36 @@
 %endif
 
 Name: desmume
-Version: 0.9.9
+Version: 0.9.10
 Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
 URL: http://desmume.org/
-Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.tar
 # Do not look into builddir
 Patch0: %{name}-0.9-dontlookinbuilddir.patch
+# Fix compile errors
+# Upstream CVS
+Patch1: %{name}-0.9.10-glx_3Demu.patch
+# Use system tinyxml instead of the embedded copy
+Patch2: %{name}-0.9.10-tinyxml.patch
 
 BuildRequires: gtkglext-devel
 BuildRequires: libglade2-devel
 BuildRequires: openal-soft-devel
-BuildRequires: lua-devel
+%if 0%{?fedora} >= 20
+BuildRequires:  compat-lua-devel
+%else
+BuildRequires:  lua-devel
+%endif
 BuildRequires: zziplib-devel 
+BuildRequires: agg-devel
+BuildRequires: tinyxml-devel
+# Not yet in Fedora
+#BuildRequires: soundtouch-devel >= 1.5.0
 BuildRequires: gettext
 BuildRequires: intltool
-BuildRequires: agg-devel
 BuildRequires: desktop-file-utils
 Requires: hicolor-icon-theme
 
@@ -51,6 +63,11 @@ This is the CLI version.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+
+# Remove bundled tinyxml
+rm -rf src/utils/tinyxml
 
 # Fix end-of-line encoding
 sed -i 's/\r//' AUTHORS
@@ -86,7 +103,6 @@ make %{?_smp_mflags}
 
 
 %install
-rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 
 # Remove installed icon
@@ -126,7 +142,7 @@ desktop-file-install \
 
 %post
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
+/usr/bin/update-desktop-database &> /dev/null || :
 
 %post glade
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
@@ -137,6 +153,7 @@ if [ $1 -eq 0 ] ; then
     touch --no-create %{_datadir}/icons/hicolor &>/dev/null
     gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
+/usr/bin/update-desktop-database &> /dev/null || :
 
 
 %postun glade
@@ -186,6 +203,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Dec 01 2013 Andrea Musuruane <musuruan@gmail.com> - 0.9.10-1
+- Updated to upstream version 0.9.10
+- Added a patch to use system tinyxml
+- Built with compat-lua for F20+
+- Dropped cleaning at the beginning of %%install
+- Updated desktop database because desmume desktop entry has MimeType key
+
 * Wed May 01 2013 Andrea Musuruane <musuruan@gmail.com> - 0.9.9-1
 - Updated to upstream version 0.9.9
 - Dropped obsolete Group, Buildroot, %%clean and %%defattr
@@ -257,7 +281,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Wed Apr 23 2008 Andrea Musuruane <musuruan@gmail.com> 0.8-1
 - Updated to upstream version 0.8
 
-* Sun Sep 08 2007 Andrea Musuruane <musuruan@gmail.com> 0.7.3-4
+* Sat Sep 08 2007 Andrea Musuruane <musuruan@gmail.com> 0.7.3-4
 - Using debian sources because many things were missing from upstream
 - Removed no longer needed automake and autoconf from BR
 - Updated icon cache scriptlets to be compliant to new guidelines
