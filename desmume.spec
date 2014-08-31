@@ -4,7 +4,7 @@
 
 Name: desmume
 Version: 0.9.10
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
@@ -203,6 +203,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 0.9.10-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Sun Dec 01 2013 Andrea Musuruane <musuruan@gmail.com> - 0.9.10-1
 - Updated to upstream version 0.9.10
 - Added a patch to use system tinyxml
