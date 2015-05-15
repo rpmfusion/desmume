@@ -1,7 +1,7 @@
-diff -durN desmume-0.9.orig/src/gtk-glade/main.cpp desmume-0.9/src/gtk-glade/main.cpp
---- desmume-0.9.orig/src/gtk-glade/main.cpp	2008-12-30 21:36:06.000000000 +0100
-+++ desmume-0.9/src/gtk-glade/main.cpp	2009-01-04 17:30:47.000000000 +0100
-@@ -239,11 +239,6 @@
+diff -durN desmume-0.9.11.orig/src/gtk-glade/main.cpp desmume-0.9.11/src/gtk-glade/main.cpp
+--- desmume-0.9.11.orig/src/gtk-glade/main.cpp	2015-02-14 16:05:26.000000000 +0100
++++ desmume-0.9.11/src/gtk-glade/main.cpp	2015-05-14 14:30:47.121562491 +0200
+@@ -324,11 +324,6 @@
  {
  	gchar *path;
  
