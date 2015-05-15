@@ -1,31 +1,20 @@
-%if (0%{?fedora} && 0%{?fedora}) < 19
-%global with_desktop_vendor_tag 1
-%endif
-
 Name: desmume
-Version: 0.9.10
+Version: 0.9.11
 Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
 URL: http://desmume.org/
-Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.tar
+Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 # Do not look into builddir
-Patch0: %{name}-0.9-dontlookinbuilddir.patch
-# Fix compile errors
-# Upstream CVS
-Patch1: %{name}-0.9.10-glx_3Demu.patch
+Patch0: %{name}-0.9.11-dontlookinbuilddir.patch
 # Use system tinyxml instead of the embedded copy
-Patch2: %{name}-0.9.10-tinyxml.patch
+Patch1: %{name}-0.9.11-tinyxml.patch
 
 BuildRequires: gtkglext-devel
 BuildRequires: libglade2-devel
 BuildRequires: openal-soft-devel
-%if 0%{?fedora} >= 20
-BuildRequires:  compat-lua-devel
-%else
-BuildRequires:  lua-devel
-%endif
+BuildRequires: compat-lua-devel
 BuildRequires: zziplib-devel 
 BuildRequires: agg-devel
 BuildRequires: tinyxml-devel
@@ -64,7 +53,6 @@ This is the CLI version.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 # Remove bundled tinyxml
 rm -rf src/utils/tinyxml
@@ -81,9 +69,10 @@ do
 done
 
 # Fix premissions
-chmod 644 src/*.{cpp,h}
-chmod 644 src/gtk-glade/*.{cpp,h}
-chmod 644 src/gtk-glade/dTools/*.{cpp,h}
+chmod 644 COPYING README README.LIN
+chmod 644 src/filter/hq4x.dat
+chmod 644 src/gtk/DeSmuME.xpm
+find src -name *.[ch]* -exec chmod 644 {} \;
 
 # Fix glade path
 sed -i 's|gladedir = $(datadir)/desmume/glade|gladedir = $(datadir)/desmume-glade/|g' src/gtk-glade/Makefile.{am,in}
@@ -98,7 +87,8 @@ sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' configure{,.a
 %build
 %configure \
   --enable-openal \
-  --enable-glade
+  --enable-glade \
+  --enable-wifi
 make %{?_smp_mflags}
 
 
@@ -117,9 +107,6 @@ install -m 644 src/gtk/DeSmuME.xpm %{buildroot}%{_datadir}/icons/hicolor/32x32/a
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --delete-original \
-%if %{with_desktop_vendor_tag}
-  --vendor dribble \
-%endif
   --remove-key Version \
   --remove-category GNOME \
   --remove-category GTK \
@@ -128,9 +115,6 @@ desktop-file-install \
 
 desktop-file-install \
   --delete-original \
-%if %{with_desktop_vendor_tag}  
-  --vendor dribble \
-%endif
   --remove-key Version \
   --remove-category GNOME \
   --remove-category GTK \
@@ -174,11 +158,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %files
 %{_bindir}/%{name}
 %{_datadir}/icons/hicolor/32x32/apps/DeSmuME.xpm
-%if %{with_desktop_vendor_tag} 
-%{_datadir}/applications/dribble-%{name}.desktop
-%else
 %{_datadir}/applications/%{name}.desktop
-%endif
 %{_mandir}/man1/%{name}.1*
 %doc AUTHORS ChangeLog COPYING README README.LIN
 
@@ -187,11 +167,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %{_bindir}/%{name}-glade
 %{_datadir}/%{name}-glade
 %{_datadir}/icons/hicolor/32x32/apps/DeSmuME-glade.xpm
-%if %{with_desktop_vendor_tag}
-%{_datadir}/applications/dribble-%{name}-glade.desktop
-%else
 %{_datadir}/applications/%{name}-glade.desktop
-%endif
 %{_mandir}/man1/%{name}-glade.1*
 %doc AUTHORS ChangeLog COPYING README README.LIN
 
@@ -203,6 +179,13 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu May 14 2015 Andrea Musuruane <musuruan@gmail.com> - 0.9.11-1
+- Updated to upstream version 0.9.11
+- Spec file cleanup
+
+* Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 0.9.10-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Sun Dec 01 2013 Andrea Musuruane <musuruan@gmail.com> - 0.9.10-1
 - Updated to upstream version 0.9.10
 - Added a patch to use system tinyxml
