@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.11
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
@@ -10,13 +10,16 @@ Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Patch0: %{name}-0.9.11-dontlookinbuilddir.patch
 # Use system tinyxml instead of the embedded copy
 Patch1: %{name}-0.9.11-tinyxml.patch
+Patch2: gcc6_fixes.patch
 
 BuildRequires: gtkglext-devel
 BuildRequires: libglade2-devel
 BuildRequires: openal-soft-devel
 BuildRequires: compat-lua-devel
-BuildRequires: zziplib-devel 
+BuildRequires: zziplib-devel
+%if 0%{?fedora} <= 24 
 BuildRequires: agg-devel
+%endif
 BuildRequires: tinyxml-devel
 # Not yet in Fedora
 #BuildRequires: soundtouch-devel >= 1.5.0
@@ -53,6 +56,8 @@ This is the CLI version.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+sed -i 's/\r//' src/MMU_timing.h
+%patch2 -p1
 
 # Remove bundled tinyxml
 rm -rf src/utils/tinyxml
@@ -125,60 +130,67 @@ desktop-file-install \
 
 
 %post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 /usr/bin/update-desktop-database &> /dev/null || :
 
 %post glade
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %postun
 if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+    /usr/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
 /usr/bin/update-desktop-database &> /dev/null || :
 
 
 %postun glade
 if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+    /usr/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
 
 
 %posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %posttrans glade
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
+%doc AUTHORS ChangeLog README README.LIN
+%license COPYING
 %{_bindir}/%{name}
 %{_datadir}/icons/hicolor/32x32/apps/DeSmuME.xpm
 %{_datadir}/applications/%{name}.desktop
 %{_mandir}/man1/%{name}.1*
-%doc AUTHORS ChangeLog COPYING README README.LIN
 
 
 %files glade -f %{name}-glade.lang
+%doc AUTHORS ChangeLog README README.LIN
+%license COPYING
 %{_bindir}/%{name}-glade
 %{_datadir}/%{name}-glade
 %{_datadir}/icons/hicolor/32x32/apps/DeSmuME-glade.xpm
 %{_datadir}/applications/%{name}-glade.desktop
 %{_mandir}/man1/%{name}-glade.1*
-%doc AUTHORS ChangeLog COPYING README README.LIN
 
 
 %files cli
+%doc AUTHORS ChangeLog README README.LIN
+%license COPYING
 %{_bindir}/%{name}-cli
 %{_mandir}/man1/%{name}-cli.1*
-%doc AUTHORS ChangeLog COPYING README README.LIN
 
 
 %changelog
+* Thu Jul 28 2016 Leigh Scott <leigh123linux@googlemail.com> - 0.9.11-2
+- fix gcc6 compile issue
+- quick spec file clean up
+
 * Thu May 14 2015 Andrea Musuruane <musuruan@gmail.com> - 0.9.11-1
 - Updated to upstream version 0.9.11
 - Spec file cleanup
