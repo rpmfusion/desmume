@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.11
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
@@ -10,19 +10,23 @@ Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 Patch0: %{name}-0.9.11-dontlookinbuilddir.patch
 # Use system tinyxml instead of the embedded copy
 Patch1: %{name}-0.9.11-tinyxml.patch
+# Compile with gcc6
 Patch2: gcc6_fixes.patch
+# Fix check for null terminator
+Patch3: %{name}-0.9.11-null_terminator.patch
 
 BuildRequires: gtkglext-devel
 BuildRequires: libglade2-devel
 BuildRequires: openal-soft-devel
-BuildRequires: compat-lua-devel
+BuildRequires: lua-devel
 BuildRequires: zziplib-devel
+# Retired from Fedora for F25+
 %if 0%{?fedora} <= 24 
 BuildRequires: agg-devel
 %endif
 BuildRequires: tinyxml-devel
-# Not yet in Fedora
-#BuildRequires: soundtouch-devel >= 1.5.0
+BuildRequires: soundtouch-devel >= 1.5.0
+BuildRequires: libpcap-devel
 BuildRequires: gettext
 BuildRequires: intltool
 BuildRequires: desktop-file-utils
@@ -58,6 +62,7 @@ This is the CLI version.
 %patch1 -p1
 sed -i 's/\r//' src/MMU_timing.h
 %patch2 -p1
+%patch3 -p1
 
 # Remove bundled tinyxml
 rm -rf src/utils/tinyxml
@@ -91,6 +96,7 @@ sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' configure{,.a
 
 %build
 %configure \
+  --enable-glx \
   --enable-openal \
   --enable-glade \
   --enable-wifi
@@ -187,6 +193,10 @@ fi
 
 
 %changelog
+* Sun Mar 19 2017 Andrea Musuruane <musuruan@gmail.com> - 0.9.11-4
+- Fixed FTBFS
+- Added soundtouch-devel and libpcap-devel to BR
+
 * Sun Mar 19 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 0.9.11-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
