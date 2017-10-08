@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.11
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
@@ -193,6 +193,9 @@ fi
 
 
 %changelog
+* Sun Oct 08 2017 Sérgio Basto <sergio@serjux.com> - 0.9.11-6
+- Rebuild for soundtouch 2.0.0
+
 * Thu Aug 31 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 0.9.11-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
