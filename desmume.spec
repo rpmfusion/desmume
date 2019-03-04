@@ -15,6 +15,7 @@ Patch2: gcc6_fixes.patch
 # Fix check for null terminator
 Patch3: %{name}-0.9.11-null_terminator.patch
 
+BuildRequires: gcc-c++
 BuildRequires: gtkglext-devel
 BuildRequires: libglade2-devel
 BuildRequires: openal-soft-devel
