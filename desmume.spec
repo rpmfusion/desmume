@@ -1,6 +1,6 @@
 Name: desmume
 Version: 0.9.11
-Release: 10%{?dist}
+Release: 11%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
@@ -194,6 +194,9 @@ fi
 
 
 %changelog
+* Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 0.9.11-11
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Fri Aug 09 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 0.9.11-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
