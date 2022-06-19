@@ -1,55 +1,46 @@
+%define pkgversion %(echo %version|sed "s/\\\\\./_/g")
+
 Name: desmume
-Version: 0.9.11
-Release: 15%{?dist}
+Version: 0.9.13
+Release: 1%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
 URL: http://desmume.org/
-Source0: http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-# Do not look into builddir
-Patch0: %{name}-0.9.11-dontlookinbuilddir.patch
+Source0: https://github.com/TASEmulators/desmume/archive/release_%{pkgversion}/%{name}-%{version}.tar.gz
+# Fix format strings
+Patch0: %{name}-0.9.13-formatstring.patch
 # Use system tinyxml instead of the embedded copy
-Patch1: %{name}-0.9.11-tinyxml.patch
-# Compile with gcc6
-Patch2: gcc6_fixes.patch
-# Fix check for null terminator
-Patch3: %{name}-0.9.11-null_terminator.patch
+Patch1: %{name}-0.9.13-tinyxml.patch
 
 BuildRequires: gcc-c++
-BuildRequires: gtkglext-devel
-BuildRequires: libglade2-devel
-BuildRequires: openal-soft-devel
-BuildRequires: lua-devel
-BuildRequires: zziplib-devel
-# Retired from Fedora for F25+
-%if 0%{?fedora} <= 24 
-BuildRequires: agg-devel
-%endif
-BuildRequires: tinyxml-devel
-BuildRequires: soundtouch-devel >= 1.5.0
-BuildRequires: libpcap-devel
-BuildRequires: gettext
-BuildRequires: intltool
+BuildRequires: meson
+BuildRequires: pkgconfig(glib-2.0)
+BuildRequires: pkgconfig(sdl2)
+BuildRequires: pkgconfig(libpcap)
+BuildRequires: pkgconfig(zlib)
+BuildRequires: pkgconfig(gl)
+BuildRequires: pkgconfig(openal)
+BuildRequires: pkgconfig(alsa)
+BuildRequires: pkgconfig(soundtouch)
+BuildRequires: pkgconfig(gtk+-3.0)
+BuildRequires: pkgconfig(tinyxml)
 BuildRequires: desktop-file-utils
+BuildRequires: libappstream-glib
 Requires: hicolor-icon-theme
 
+# desmume-glade is no longer provided
+Provides: desmume-glade = %{version}-%{release}
+Obsoletes: desmume-glade < 0.9.13
 
-%package glade
-Summary: A Nintendo DS emulator (Glade GUI version)
-Group: Applications/Emulators
 
 %package cli
 Summary: A Nintendo DS emulator (CLI version)
-Group: Applications/Emulators
 
 
 %description
 DeSmuME is a Nintendo DS emulator running homebrew demos and commercial games.
 
-%description glade
-DeSmuME is a Nintendo DS emulator running homebrew demos and commercial games.
-
-This is the GTK/Glade version.
 
 %description cli
 DeSmuME is a Nintendo DS emulator running homebrew demos and commercial games.
@@ -58,12 +49,9 @@ This is the CLI version.
 
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-sed -i 's/\r//' src/MMU_timing.h
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1 -n %{name}-release_%{pkgversion}
+
+pushd desmume
 
 # Remove bundled tinyxml
 rm -rf src/utils/tinyxml
@@ -72,7 +60,7 @@ rm -rf src/utils/tinyxml
 sed -i 's/\r//' AUTHORS
 
 # Fix file encoding
-for txtfile in ChangeLog AUTHORS
+for txtfile in AUTHORS
 do
     iconv --from=ISO-8859-1 --to=UTF-8 $txtfile > tmp
     touch -r $txtfile tmp
@@ -80,120 +68,53 @@ do
 done
 
 # Fix premissions
-chmod 644 COPYING README README.LIN
-chmod 644 src/filter/hq4x.dat
-chmod 644 src/gtk/DeSmuME.xpm
 find src -name *.[ch]* -exec chmod 644 {} \;
 
-# Fix glade path
-sed -i 's|gladedir = $(datadir)/desmume/glade|gladedir = $(datadir)/desmume-glade/|g' src/gtk-glade/Makefile.{am,in}
-
-# We need a different icon for desmume-glade
-sed -i 's|Icon=DeSmuME|Icon=DeSmuME-glade|g' src/gtk-glade/desmume-glade.desktop
-
-# Fix gettext package name
-sed -i 's|GETTEXT_PACKAGE=desmume|GETTEXT_PACKAGE=desmume-glade|g' configure{,.ac}
+popd
 
 
 %build
-%configure \
-  --enable-glx \
-  --enable-openal \
-  --enable-glade \
-  --enable-wifi
-make %{?_smp_mflags}
-
+pushd desmume/src/frontend/posix
+%meson
+%meson_build
+popd
 
 %install
-make install DESTDIR=%{buildroot}
+pushd desmume/src/frontend/posix
+%meson_install
+popd
 
-# Remove installed icon
-rm %{buildroot}%{_datadir}/pixmaps/DeSmuME.xpm
+# Validate desktop file
+desktop-file-validate \
+  %{buildroot}%{_datadir}/applications/org.desmume.DeSmuME.desktop
 
-# Install icons
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
-install -m 644 src/gtk/DeSmuME.xpm %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/
-install -m 644 src/gtk/DeSmuME.xpm %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/DeSmuME-glade.xpm
-
-# Rename desktop files and fix categories
-mkdir -p %{buildroot}%{_datadir}/applications
-desktop-file-install \
-  --delete-original \
-  --remove-key Version \
-  --remove-category GNOME \
-  --remove-category GTK \
-  --dir %{buildroot}%{_datadir}/applications \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
-
-desktop-file-install \
-  --delete-original \
-  --remove-key Version \
-  --remove-category GNOME \
-  --remove-category GTK \
-  --dir %{buildroot}%{_datadir}/applications \
-  %{buildroot}%{_datadir}/applications/%{name}-glade.desktop
-
-%find_lang %{name}-glade
-
-
-%post
-/usr/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-/usr/bin/update-desktop-database &> /dev/null || :
-
-%post glade
-/usr/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-
-%postun
-if [ $1 -eq 0 ] ; then
-    /usr/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-/usr/bin/update-desktop-database &> /dev/null || :
-
-
-%postun glade
-if [ $1 -eq 0 ] ; then
-    /usr/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-
-%posttrans
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
-
-%posttrans glade
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+# Verify AppData file
+appstream-util validate-relax --nonet \
+  %{buildroot}%{_metainfodir}/org.desmume.DeSmuME.metainfo.xml
 
 
 %files
-%doc AUTHORS ChangeLog README README.LIN
-%license COPYING
+%doc desmume/AUTHORS desmume/ChangeLog desmume/README desmume/README.LIN
+%license desmume/COPYING
 %{_bindir}/%{name}
-%{_datadir}/icons/hicolor/32x32/apps/DeSmuME.xpm
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/icons/hicolor/*/apps/org.desmume.DeSmuME.*
+%{_datadir}/applications/org.desmume.DeSmuME.desktop
 %{_mandir}/man1/%{name}.1*
-
-
-%files glade -f %{name}-glade.lang
-%doc AUTHORS ChangeLog README README.LIN
-%license COPYING
-%{_bindir}/%{name}-glade
-%{_datadir}/%{name}-glade
-%{_datadir}/icons/hicolor/32x32/apps/DeSmuME-glade.xpm
-%{_datadir}/applications/%{name}-glade.desktop
-%{_mandir}/man1/%{name}-glade.1*
+%{_metainfodir}/org.desmume.DeSmuME.metainfo.xml
 
 
 %files cli
-%doc AUTHORS ChangeLog README README.LIN
-%license COPYING
+%doc desmume/AUTHORS desmume/ChangeLog desmume/README desmume/README.LIN
+%license desmume/COPYING
 %{_bindir}/%{name}-cli
 %{_mandir}/man1/%{name}-cli.1*
 
 
 %changelog
+* Sat Jun 18 2022 Andrea Musuruane <musuruan@gmail.com> - 0.9.13-1
+- Updated to upstream version 0.9.13
+- Spec file clean up
+
 * Wed Feb 09 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.9.11-15
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
