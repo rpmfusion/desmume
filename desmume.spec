@@ -2,7 +2,7 @@
 
 Name: desmume
 Version: 0.9.13
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Nintendo DS emulator
 
 License: GPLv2+
@@ -12,6 +12,13 @@ Source0: https://github.com/TASEmulators/desmume/archive/release_%{pkgversion}/%
 Patch0: %{name}-0.9.13-formatstring.patch
 # Use system tinyxml instead of the embedded copy
 Patch1: %{name}-0.9.13-tinyxml.patch
+# Fix building on aarch64
+# https://github.com/TASEmulators/desmume/issues/551
+Patch2: %{name}-0.9.13-aarch64.patch
+#Fix building on ppc64le
+# https://github.com/TASEmulators/desmume/issues/550
+Patch3: %{name}-0.9.13-ppc64le.patch
+Patch4: %{name}-0.9.13-arm.patch
 
 BuildRequires: gcc-c++
 BuildRequires: meson
@@ -111,6 +118,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Jun 20 2022 Andrea Musuruane <musuruan@gmail.com> - 0.9.13-2
+- Fixed building on ppc64le
+- Fixed building on aarch64
+
 * Sat Jun 18 2022 Andrea Musuruane <musuruan@gmail.com> - 0.9.13-1
 - Updated to upstream version 0.9.13
 - Spec file clean up
