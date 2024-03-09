@@ -1,11 +1,11 @@
 %define pkgversion %(echo %version|sed "s/\\\\\./_/g")
+%global _vpath_srcdir desmume/src/frontend/posix
 
 Name: desmume
 Version: 0.9.13
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: A Nintendo DS emulator
-
-License: GPLv2+
+License: GPL-2.0-or-later
 URL: http://desmume.org/
 Source0: https://github.com/TASEmulators/desmume/archive/release_%{pkgversion}/%{name}-%{version}.tar.gz
 # Fix format strings
@@ -81,15 +81,12 @@ popd
 
 
 %build
-pushd desmume/src/frontend/posix
+export CFLAGS="%{optflags} -std=gnu11"
 %meson
 %meson_build
-popd
 
 %install
-pushd desmume/src/frontend/posix
 %meson_install
-popd
 
 # Validate desktop file
 desktop-file-validate \
@@ -118,6 +115,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Mar 09 2024 Antonio Trande <sagitter@fedoraproject.org> - 0.9.13-6
+- Re-define CFLAGS
+
 * Sat Feb 03 2024 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.9.13-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
