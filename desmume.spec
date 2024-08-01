@@ -3,7 +3,7 @@
 
 Name: desmume
 Version: 0.9.13
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: A Nintendo DS emulator
 License: GPL-2.0-or-later
 URL: http://desmume.org/
@@ -115,6 +115,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Aug 01 2024 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.9.13-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
+
 * Sat Mar 09 2024 Antonio Trande <sagitter@fedoraproject.org> - 0.9.13-6
 - Re-define CFLAGS
 
